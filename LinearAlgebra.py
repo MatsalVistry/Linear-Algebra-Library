@@ -45,26 +45,62 @@ def scaleElements(matrix,scalar):
             for col in range(len(matrix[row])):
                 matrix[row][col] = matrix[row][col]*scalar
     else:
+        newVector = [0 for j in range(len(matrix))] 
         for x in range(len(matrix)):
-            matrix[x] = matrix[x]*scalar
+            if matrix[x]!=0:
+                newVector[x] = matrix[x]*scalar
+        return newVector
 
 def transpose(matrix):
     if isinstance(matrix[0],list):
         newMatrix = [[0 for i in range(len(matrix))] for j in range(len(matrix[0]))] 
-
         for x in range(len(matrix)):
             for y in range(len(matrix[0])):
                 newMatrix[y][x] = matrix[x][y]
         return newMatrix
     else:
-        
         newMatrix = [[0] for j in range(len(matrix))] 
         for x in range(len(matrix)):
             newMatrix[x][0] = matrix[x]
         return newMatrix
 
-matrix = [[2,3,4],[5,6,7]]
-v2 = [1,5,8]
-print(transpose(matrix))   
+def printMatrix(matrix):
+    for row in matrix:
+        for col in row:
+            print(str(round(col,2))+"   ",end="")
+        print()
+
+def rowReduce(matrix, y):
+    matrixWidth = len(matrix[0])
+
+    for rowIndex in range(len(matrix)):
+        matrix[rowIndex] += y[rowIndex]
+    # print(matrix)
+
+    row=0
+    curRow = 0
+    col = 0
+
+    while col < matrixWidth and curRow< len(matrix)-1:
+        if matrix[curRow][col] != 0:
+            matrix[curRow] = scaleElements(matrix[curRow],1/(matrix[curRow][col]))
+            row = curRow+1
+            while row < len(matrix):
+                scalar = matrix[row][col]/matrix[curRow][col]
+                matrix[row] = add(scaleElements(matrix[curRow],-scalar),matrix[row])
+                row+=1
+                # print(matrix)
+            curRow+=1
+        col+=1
+    matrix[curRow] = scaleElements(matrix[curRow],1/(matrix[curRow][col]))
+
+
+matrix = [[2,3,5],[5,6,9],[6,8,2]]
+v2 = [[1],[5],[2]]
+rowReduce(matrix,v2)
+printMatrix(matrix)
+#  [2 3 5 1]
+#  [5 6 9 5]
+#  [6 8 2 2]
 
 
