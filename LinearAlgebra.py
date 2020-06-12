@@ -30,6 +30,17 @@ def add(vector1,vector2):
             newVector.append(vector1[x]+vector2[x])
         return newVector
 
+def getVectorMagnitude(vector):
+    totalSquared = 0
+    for x in vector:
+        totalSquared+=pow(x,2)
+    return pow(totalSquared,.5)
+
+def getProjectionLength(vector1,vector2):
+    product = dotProduct(vector1,vector2)
+    magnitude = getVectorMagnitude(vector2)
+    return product/magnitude
+
 def subtract(vector1,vector2):
     newVector = []
     if len(vector1) != len(vector2):
@@ -103,7 +114,6 @@ def rowReduce(matrix, y):
 
     return augmentedMatrix
 
-
 def getRank(matrix, y):
     augmentedMatrix = getAugmentedMatrix(matrix,y)
     matrixWidth = len(augmentedMatrix[0])
@@ -129,10 +139,13 @@ def getRank(matrix, y):
 
 matrix = [[8,3,5],[5,0,9],[6,8,2]]
 v2 = [[1],[5],[2]]
+vec = [1,5,10]
 newM = rowReduce(matrix,v2)
 rank = getRank(matrix,v2)
+
 print(rank)
 printMatrix(newM)
+
 
 #  [2 3 5 1]
 #  [5 6 9 5]
