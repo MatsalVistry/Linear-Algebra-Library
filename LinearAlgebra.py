@@ -60,6 +60,7 @@ def scaleElements(matrix,scalar):
         for x in range(len(matrix)):
             if matrix[x]!=0:
                 newVector[x] = matrix[x]*scalar
+
         return newVector
 
 def transpose(matrix):
@@ -93,6 +94,30 @@ def getAugmentedMatrix(matrix, y):
         for val in y[rowIndex]:
             augmentedMatrix[rowIndex].append(val)
     return augmentedMatrix
+
+def cloneMatrix(matrix):
+    cloneMatrix = [[0.00 for i in range(len(matrix[0]))] for j in range(len(matrix))]
+    for row in range(len(matrix)):
+        for col in range(len(matrix[0])):
+            cloneMatrix[row][col] = matrix[row][col]
+    return cloneMatrix
+
+def invertedAugmentMatrix(matrix):
+    invertedAugmentMatrix = [[0.00 for i in range(len(matrix[0]))] for j in range(len(matrix))]
+    for row in range(len(matrix)):
+        for col in range(len(matrix[0])):
+            invertedAugmentMatrix[row][col] = matrix[row][col]
+
+    index = 0
+    matrixWidth = len(invertedAugmentMatrix[0])
+    for row in invertedAugmentMatrix:
+        for i in range(matrixWidth):
+            if i == index:
+                row.append(1)
+            else:
+                row.append(0)
+        index+=1
+    return invertedAugmentMatrix
 
 def rowReduce(matrix, y):
     augmentedMatrix = getAugmentedMatrix(matrix,y)
@@ -192,11 +217,65 @@ def rowReducedEchelonForm(matrix, y):
 
     return augmentedMatrix
 
-matrix = [[3,4,5,7],[3,4,6,7],[5,2,8,6],[3,4,6,7]]
+def inverse(matrix):
+    if len(matrix) != len(matrix[0]):
+        return 'Matrix is non invertible'
+    else:
+        invertedMatrix = invertedAugmentMatrix(matrix)
+        matrixWidth = len(matrix[0])
+        row=0
+        curRow = 0
+        col = 0
+        lastPivRow = 0
+        lastPivCol = 0
 
-v2 = [[2],[2],[6],[5]]
+        while col < matrixWidth and curRow< len(invertedMatrix):
+            if invertedMatrix[curRow][col] != 0:
+                lastPivRow=curRow
+                lastPivCol=col
+                invertedMatrix[curRow] = scaleElements(invertedMatrix[curRow],1/(invertedMatrix[curRow][col]))
+                row = curRow+1
+                while row < len(invertedMatrix):
+                    scalar = invertedMatrix[row][col]/invertedMatrix[curRow][col]
+                    invertedMatrix[row] = add(scaleElements(invertedMatrix[curRow],-scalar),invertedMatrix[row])
+                    row+=1
+                curRow+=1
+            else:
+                row = curRow+1
+                while row<len(invertedMatrix):
+                    if invertedMatrix[row][col] !=0:
+                        temp = invertedMatrix[curRow]
+                        invertedMatrix[curRow] = invertedMatrix[row]
+                        invertedMatrix[row] = temp
+                        col-=1
+                        break
+                    row+=1     
+            col+=1
+
+        col = lastPivCol;
+        curRow = lastPivRow;
+
+        while col!=0:
+            if invertedMatrix[curRow][col]!=0:
+                row = curRow-1
+                while row!=-1:
+                    scalar = invertedMatrix[row][col]/invertedMatrix[curRow][col]
+                    invertedMatrix[row] = add(scaleElements(invertedMatrix[curRow],-scalar),invertedMatrix[row])
+                    row-=1
+                curRow-=1
+            col-=1
+
+    for row in range(len(invertedMatrix)):
+        invertedMatrix[row] = invertedMatrix[row][matrixWidth:]
+    return invertedMatrix
+
+
+
+matrix = [[3,4,5,7],[3,1,6,7],[5,2,8,6],[3,4,6,7]]
+
+v2 = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
 vec = [1,5,10]
-newM = rowReducedEchelonForm(matrix,v2)
+newM = inverse(matrix)
 rank = getRank(matrix,v2)
 
 print(rank)
