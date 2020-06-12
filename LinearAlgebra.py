@@ -41,19 +41,30 @@ def subtract(vector1,vector2):
 
 def scaleElements(matrix,scalar):
     if isinstance(matrix[0],list):
-        print("AAAAAAAAA")
         for row in range(len(matrix)):
             for col in range(len(matrix[row])):
                 matrix[row][col] = matrix[row][col]*scalar
     else:
-        print("BBBBBBBBBBBBB")
         for x in range(len(matrix)):
             matrix[x] = matrix[x]*scalar
 
-matrix = [[0,4,6],[1,3,4]]
-scalar = 3
+def transpose(matrix):
+    if isinstance(matrix[0],list):
+        newMatrix = [[0 for i in range(len(matrix))] for j in range(len(matrix[0]))] 
+
+        for x in range(len(matrix)):
+            for y in range(len(matrix[0])):
+                newMatrix[y][x] = matrix[x][y]
+        return newMatrix
+    else:
+        
+        newMatrix = [[0] for j in range(len(matrix))] 
+        for x in range(len(matrix)):
+            newMatrix[x][0] = matrix[x]
+        return newMatrix
+
+matrix = [[2,3,4],[5,6,7]]
 v2 = [1,5,8]
-scaleElements(matrix,3)
-print(matrix)   
+print(transpose(matrix))   
 
 
