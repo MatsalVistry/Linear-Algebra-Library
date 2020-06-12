@@ -53,16 +53,16 @@ def scaleElements(matrix,scalar):
 
 def transpose(matrix):
     if isinstance(matrix[0],list):
-        augmentedMatrix = [[0 for i in range(len(matrix))] for j in range(len(matrix[0]))] 
+        newMatrix = [[0 for i in range(len(matrix))] for j in range(len(matrix[0]))] 
         for x in range(len(matrix)):
             for y in range(len(matrix[0])):
-                augmentedMatrix[y][x] = matrix[x][y]
-        return augmentedMatrix
+                newMatrix[y][x] = matrix[x][y]
+        return newMatrix
     else:
-        augmentedMatrix = [[0] for j in range(len(matrix))] 
+        newMatrix = [[0] for j in range(len(matrix))] 
         for x in range(len(matrix)):
-            augmentedMatrix[x][0] = matrix[x]
-        return augmentedMatrix
+            newMatrix[x][0] = matrix[x]
+        return newMatrix
 
 def printMatrix(matrix):
     for row in matrix:
@@ -70,7 +70,7 @@ def printMatrix(matrix):
             print(str(format(col, '.2f'))+"   ",end="")
         print()
 
-def rowReduce(matrix, y):
+def getAugmentedMatrix(matrix, y):
     augmentedMatrix = [[0.00 for i in range(len(matrix[0]))] for j in range(len(matrix))]
 
     for row in range(len(matrix)):
@@ -81,12 +81,16 @@ def rowReduce(matrix, y):
     for rowIndex in range(len(augmentedMatrix)):
         for val in y[rowIndex]:
             augmentedMatrix[rowIndex].append(val)
+    return augmentedMatrix
 
+def rowReduce(matrix, y):
+    augmentedMatrix = getAugmentedMatrix(matrix,y)
+    matrixWidth = len(augmentedMatrix[0])
     row=0
     curRow = 0
     col = 0
 
-    while col < matrixWidth and curRow< len(augmentedMatrix)-1:
+    while col < matrixWidth and curRow< len(augmentedMatrix):
         if augmentedMatrix[curRow][col] != 0:
             augmentedMatrix[curRow] = scaleElements(augmentedMatrix[curRow],1/(augmentedMatrix[curRow][col]))
             row = curRow+1
@@ -96,13 +100,38 @@ def rowReduce(matrix, y):
                 row+=1
             curRow+=1
         col+=1
-    augmentedMatrix[curRow] = scaleElements(augmentedMatrix[curRow],1/(augmentedMatrix[curRow][col]))
+
     return augmentedMatrix
 
 
-matrix = [[2,3,5],[5,6,9],[6,8,2]]
+def getRank(matrix, y):
+    augmentedMatrix = getAugmentedMatrix(matrix,y)
+    matrixWidth = len(augmentedMatrix[0])
+    row=0
+    curRow = 0
+    col = 0
+    rank = 0;
+
+    while col < matrixWidth and curRow< len(augmentedMatrix):
+        if augmentedMatrix[curRow][col] != 0:
+            rank+=1
+            augmentedMatrix[curRow] = scaleElements(augmentedMatrix[curRow],1/(augmentedMatrix[curRow][col]))
+            row = curRow+1
+            while row < len(augmentedMatrix):
+                scalar = augmentedMatrix[row][col]/augmentedMatrix[curRow][col]
+                augmentedMatrix[row] = add(scaleElements(augmentedMatrix[curRow],-scalar),augmentedMatrix[row])
+                row+=1
+            curRow+=1
+        col+=1
+
+    return rank
+
+
+matrix = [[8,3,5],[5,0,9],[6,8,2]]
 v2 = [[1],[5],[2]]
 newM = rowReduce(matrix,v2)
+rank = getRank(matrix,v2)
+print(rank)
 printMatrix(newM)
 
 #  [2 3 5 1]
