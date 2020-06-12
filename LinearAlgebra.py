@@ -96,7 +96,7 @@ def getAugmentedMatrix(matrix, y):
 
 def rowReduce(matrix, y):
     augmentedMatrix = getAugmentedMatrix(matrix,y)
-    matrixWidth = len(augmentedMatrix[0])
+    matrixWidth = len(matrix[0])
     row=0
     curRow = 0
     col = 0
@@ -110,13 +110,22 @@ def rowReduce(matrix, y):
                 augmentedMatrix[row] = add(scaleElements(augmentedMatrix[curRow],-scalar),augmentedMatrix[row])
                 row+=1
             curRow+=1
+        else:
+            row = curRow+1
+            while row<len(augmentedMatrix):
+                if augmentedMatrix[row][col] !=0:
+                    temp = augmentedMatrix[curRow]
+                    augmentedMatrix[curRow] = augmentedMatrix[row]
+                    augmentedMatrix[row] = temp
+                row+=1
+            col-=1
         col+=1
 
     return augmentedMatrix
 
 def getRank(matrix, y):
     augmentedMatrix = getAugmentedMatrix(matrix,y)
-    matrixWidth = len(augmentedMatrix[0])
+    matrixWidth = len(matrix[0])
     row=0
     curRow = 0
     col = 0
@@ -136,19 +145,60 @@ def getRank(matrix, y):
 
     return rank
 
+def rowReducedEchelonForm(matrix, y):
+    augmentedMatrix = getAugmentedMatrix(matrix,y)
+    matrixWidth = len(matrix[0])
+    row=0
+    curRow = 0
+    col = 0
+    lastPivRow = 0
+    lastPivCol = 0
 
-matrix = [[8,3,5],[5,0,9],[6,8,2]]
-v2 = [[1],[5],[2]]
+    while col < matrixWidth and curRow< len(augmentedMatrix):
+        if augmentedMatrix[curRow][col] != 0:
+            lastPivRow=curRow
+            lastPivCol=col
+            augmentedMatrix[curRow] = scaleElements(augmentedMatrix[curRow],1/(augmentedMatrix[curRow][col]))
+            row = curRow+1
+            while row < len(augmentedMatrix):
+                scalar = augmentedMatrix[row][col]/augmentedMatrix[curRow][col]
+                augmentedMatrix[row] = add(scaleElements(augmentedMatrix[curRow],-scalar),augmentedMatrix[row])
+                row+=1
+            curRow+=1
+        else:
+            row = curRow+1
+            while row<len(augmentedMatrix):
+                if augmentedMatrix[row][col] !=0:
+                    temp = augmentedMatrix[curRow]
+                    augmentedMatrix[curRow] = augmentedMatrix[row]
+                    augmentedMatrix[row] = temp
+                    col-=1
+                    break
+                row+=1     
+        col+=1
+
+    col = lastPivCol;
+    curRow = lastPivRow;
+
+    while col!=0:
+        if augmentedMatrix[curRow][col]!=0:
+            row = curRow-1
+            while row!=-1:
+                scalar = augmentedMatrix[row][col]/augmentedMatrix[curRow][col]
+                augmentedMatrix[row] = add(scaleElements(augmentedMatrix[curRow],-scalar),augmentedMatrix[row])
+                row-=1
+            curRow-=1
+        col-=1
+
+    return augmentedMatrix
+
+matrix = [[3,4,5,7],[3,4,6,7],[5,2,8,6],[3,4,6,7]]
+
+v2 = [[2],[2],[6],[5]]
 vec = [1,5,10]
-newM = rowReduce(matrix,v2)
+newM = rowReducedEchelonForm(matrix,v2)
 rank = getRank(matrix,v2)
 
 print(rank)
 printMatrix(newM)
-
-
-#  [2 3 5 1]
-#  [5 6 9 5]
-#  [6 8 2 2]
-
 
