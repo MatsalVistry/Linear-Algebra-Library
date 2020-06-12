@@ -119,7 +119,7 @@ def invertedAugmentMatrix(matrix):
         index+=1
     return invertedAugmentMatrix
 
-def rowReduce(matrix, y):
+def upperTriangularAugment(matrix, y):
     augmentedMatrix = getAugmentedMatrix(matrix,y)
     matrixWidth = len(matrix[0])
     row=0
@@ -269,15 +269,23 @@ def inverse(matrix):
         invertedMatrix[row] = invertedMatrix[row][matrixWidth:]
     return invertedMatrix
 
+def multiplyMatrices(matrix1, matrix2):
+    newMatrix = [[0 for i in range(len(matrix2[0]))] for j in range(len(matrix1))]
+
+    for col in range(len(newMatrix[0])):
+        vec = [0 for j in range(len(matrix2))] 
+        for row in range(len(matrix2)):
+            vec[row] = matrix2[row][col]
+        for row in range(len(newMatrix)):
+            d = dotProduct(matrix1[row],vec)
+            newMatrix[row][col] = d
+    return newMatrix
 
 
-matrix = [[3,4,5,7],[3,1,6,7],[5,2,8,6],[3,4,6,7]]
+matrix = [[9,2],[4,5]]
+matrix2 = [[1],[4]]
 
-v2 = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
-vec = [1,5,10]
-newM = inverse(matrix)
-rank = getRank(matrix,v2)
+newM = upperTriangularAugment(matrix,matrix2)
 
-print(rank)
 printMatrix(newM)
 
