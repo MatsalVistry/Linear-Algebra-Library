@@ -95,6 +95,18 @@ def getAugmentedMatrix(matrix, y):
             augmentedMatrix[rowIndex].append(val)
     return augmentedMatrix
 
+def identity(rows,cols):
+    eye = [[] for j in range(rows)]
+    index = 0
+    for row in eye:
+        for i in range(cols):
+            if i == index:
+                row.append(1)
+            else:
+                row.append(0)
+        index+=1
+    return eye
+
 def cloneMatrix(matrix):
     cloneMatrix = [[0.00 for i in range(len(matrix[0]))] for j in range(len(matrix))]
     for row in range(len(matrix)):
@@ -312,12 +324,47 @@ def determinantHelper(matrix, total):
                 sign = 0
     return total
 
+def ALU(matrix):
+    U = cloneMatrix(matrix)
+    matrixWidth = len(matrix[0])
+    row=0
+    curRow = 0
+    col = 0
+    L = identity(len(matrix),len(matrix[0]))
+
+    while col < matrixWidth and curRow< len(U):
+        if U[curRow][col] != 0:
+            row = curRow+1
+            while row < len(U):
+                scalar = U[row][col]/U[curRow][col]
+                U[row] = add(scaleElements(U[curRow],-scalar),U[row])
+                E = identity(len(matrix),len(matrix[0]))
+                E[row][curRow] += -scalar
+                L  = multiplyMatrices(E,L)
+                row+=1
+            curRow+=1
+        else:
+            row = curRow+1
+            while row<len(U):
+                if U[row][col] !=0:
+                    temp = U[curRow]
+                    U[curRow] = U[row]
+                    U[row] = temp
+                row+=1
+            col-=1
+        col+=1
+    
+    return [matrix,inverse(L),U]
 
 matrix1 = [[-1,1,4,2],[2,-1,2,5],[1,2,3,4],[3,4,-1,2]]
-matrix = [[1,4],[4,88]]
-matrix2 = [[1],[4]]
+print(getRank(matrix1))
 
-print(determinant(matrix))
+val = [[2],[4],[5],[6]]
+m = ALU(matrix1)
 
-
-
+for matrix in m:
+    printMatrix(matrix)
+    print()
+L = m[1]
+U = m[2]
+printMatrix(multiplyMatrices(L,U))
