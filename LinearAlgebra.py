@@ -148,22 +148,22 @@ def upperTriangularAugment(matrix, y):
 
     return augmentedMatrix
 
-def getRank(matrix, y):
-    augmentedMatrix = getAugmentedMatrix(matrix,y)
+def getRank(matrix):
+    newMatrix = cloneMatrix(matrix)
     matrixWidth = len(matrix[0])
     row=0
     curRow = 0
     col = 0
     rank = 0;
 
-    while col < matrixWidth and curRow< len(augmentedMatrix):
-        if augmentedMatrix[curRow][col] != 0:
+    while col < matrixWidth and curRow< len(newMatrix):
+        if newMatrix[curRow][col] != 0:
             rank+=1
-            augmentedMatrix[curRow] = scaleElements(augmentedMatrix[curRow],1/(augmentedMatrix[curRow][col]))
+            newMatrix[curRow] = scaleElements(newMatrix[curRow],1/(newMatrix[curRow][col]))
             row = curRow+1
-            while row < len(augmentedMatrix):
-                scalar = augmentedMatrix[row][col]/augmentedMatrix[curRow][col]
-                augmentedMatrix[row] = add(scaleElements(augmentedMatrix[curRow],-scalar),augmentedMatrix[row])
+            while row < len(newMatrix):
+                scalar = newMatrix[row][col]/newMatrix[curRow][col]
+                newMatrix[row] = add(scaleElements(newMatrix[curRow],-scalar),newMatrix[row])
                 row+=1
             curRow+=1
         col+=1
@@ -281,11 +281,43 @@ def multiplyMatrices(matrix1, matrix2):
             newMatrix[row][col] = d
     return newMatrix
 
+def determinant(matrix):
+    if len(matrix) != len(matrix[0]):
+        return 'Matrix must be square'
+    elif len(matrix) != getRank(matrix):
+        return 0
+    else:
+        newMatrix = [[0 for i in range(len(matrix[0]))] for j in range(len(matrix))]
+        for row in range(len(matrix)):
+            for col in range(len(matrix[0])):
+                newMatrix[row][col] = matrix[row][col]
+        return determinantHelper(newMatrix,0)
 
-matrix = [[9,2],[4,5]]
+def determinantHelper(matrix, total):
+    if len(matrix) == 2 and len(matrix[0]) == 2:
+        return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
+    else:
+        sign = 0
+        for row in range(len(matrix)):
+            newMatrix = cloneMatrix(matrix)
+            s = newMatrix[row][0]
+            newMatrix.pop(row)
+            for col in range(len(newMatrix)):
+                newMatrix[col].pop(0)
+            if sign==0:
+                total+= s * determinantHelper(newMatrix,0)
+                sign = 1
+            else:
+                total+= -s * determinantHelper(newMatrix,0)
+                sign = 0
+    return total
+
+
+matrix1 = [[-1,1,4,2],[2,-1,2,5],[1,2,3,4],[3,4,-1,2]]
+matrix = [[1,4],[4,88]]
 matrix2 = [[1],[4]]
 
-newM = upperTriangularAugment(matrix,matrix2)
+print(determinant(matrix))
 
-printMatrix(newM)
+
 
