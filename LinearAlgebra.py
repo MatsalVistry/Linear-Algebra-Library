@@ -41,6 +41,13 @@ def getProjectionLength(vector1,vector2):
     magnitude = getVectorMagnitude(vector2)
     return product/magnitude
 
+def normalize(vector1):
+    newVector = []
+    magnitude = getVectorMagnitude(vector1)
+    for x in vector1:
+        newVector.append(x/magnitude)
+    return newVector
+
 def subtract(vector1,vector2):
     newVector = []
     if len(vector1) != len(vector2):
@@ -81,6 +88,7 @@ def printMatrix(matrix):
         for col in row:
             print(str(format(col, '.2f'))+"   ",end="")
         print()
+    print()
 
 def getAugmentedMatrix(matrix, y):
     augmentedMatrix = [[0.00 for i in range(len(matrix[0]))] for j in range(len(matrix))]
@@ -182,6 +190,10 @@ def getRank(matrix):
 
     return rank
 
+def appendVector(matrix, vector):
+    for row in range(len(matrix)):
+        matrix[row].append(vector[row])
+
 def rowReducedEchelonForm(matrix, y):
     augmentedMatrix = getAugmentedMatrix(matrix,y)
     matrixWidth = len(matrix[0])
@@ -228,6 +240,12 @@ def rowReducedEchelonForm(matrix, y):
         col-=1
 
     return augmentedMatrix
+
+def getVector(matrix, index):
+    vector = []
+    for row in range(len(matrix)):
+        vector.append(matrix[row][index])
+    return vector
 
 def inverse(matrix):
     if len(matrix) != len(matrix[0]):
@@ -356,15 +374,34 @@ def ALU(matrix):
     
     return [matrix,inverse(L),U]
 
-matrix1 = [[-1,1,4,2],[2,-1,2,5],[1,2,3,4],[3,4,-1,2]]
-print(getRank(matrix1))
+def GramSchmidt(matrix):
+    orthonormalMatrix = [[] for j in range(len(matrix))]
+    index = 0
+
+    for col in range(len(matrix[0])):
+        originalVector = getVector(matrix,col)
+        newVector = getVector(matrix,col)
+
+        for loc in range(index):
+            vecLoc = getVector(orthonormalMatrix, loc)
+            projectionLength = getProjectionLength(originalVector,vecLoc)
+            normalizedVec = normalize(vecLoc)
+            projectionVector = scaleElements(normalizedVec,projectionLength)
+            newVector = subtract(newVector,projectionVector)
+
+        v = normalize(newVector)
+        appendVector(orthonormalMatrix, v)
+        printMatrix(orthonormalMatrix)
+        index+=1
+
+    return orthonormalMatrix
+
+
+
+
+matrix1 = [[1,-1,0],[2,0,0],[2,2,1]]
 
 val = [[2],[4],[5],[6]]
-m = ALU(matrix1)
 
-for matrix in m:
-    printMatrix(matrix)
-    print()
-L = m[1]
-U = m[2]
-printMatrix(multiplyMatrices(L,U))
+m = GramSchmidt(matrix1)
+printMatrix(m)
