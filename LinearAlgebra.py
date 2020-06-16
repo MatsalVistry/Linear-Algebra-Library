@@ -456,16 +456,22 @@ def SVD(matrix):
     Sigma = [[0 for i in range(len(matrix[0]))] for j in range(len(matrix))] 
     for row in range(min(len(Sigma),len(Sigma[0]))):
         Sigma[row][row] = pow(holder[row][row],.5)
-    printMatrix(multiplyMatrices(U,multiplyMatrices(Sigma,transpose(V))))
     return [U,Sigma,transpose(V)]
     
+def pseudoinverse(matrix):
+    m = SVD(matrix1)
+    Sigma = m[1]
+    for row in range(min(len(Sigma),len(Sigma[0]))):
+        if Sigma[row][row] != 0:
+            Sigma[row][row] = 1/Sigma[row][row]
+    V = transpose(m[2])
+    Sigma = transpose(Sigma)
+    UT = transpose(m[0])
+    return multiplyMatrices(V,multiplyMatrices(Sigma,UT))
 
-
-matrix1 = [[9,3,9],[3,5,4]]
+matrix1 = [[1,0],[0,1],[0,1]]
 
 vector1 = [[2],[4],[5],[6]]
 
-m = SVD(matrix1)
-printMatrix(m[0])
-printMatrix(m[1])
-printMatrix(m[2])
+m = pseudoinverse(matrix1)
+printMatrix(m)
