@@ -459,7 +459,7 @@ def SVD(matrix):
     return [U,Sigma,transpose(V)]
     
 def pseudoinverse(matrix):
-    m = SVD(matrix1)
+    m = SVD(matrix)
     Sigma = m[1]
     for row in range(min(len(Sigma),len(Sigma[0]))):
         if Sigma[row][row] != 0:
@@ -468,10 +468,3 @@ def pseudoinverse(matrix):
     Sigma = transpose(Sigma)
     UT = transpose(m[0])
     return multiplyMatrices(V,multiplyMatrices(Sigma,UT))
-
-matrix1 = [[1,0],[0,1],[0,1]]
-
-vector1 = [[2],[4],[5],[6]]
-
-m = pseudoinverse(matrix1)
-printMatrix(m)
