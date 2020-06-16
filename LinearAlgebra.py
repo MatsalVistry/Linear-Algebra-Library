@@ -84,10 +84,15 @@ def transpose(matrix):
         return newMatrix
 
 def printMatrix(matrix):
-    for row in matrix:
-        for col in row:
-            print(str(format(col, '.2f'))+"   ",end="")
-        print()
+    if isinstance(matrix[0],list):
+        for row in matrix:
+            for col in row:
+                print(str(format(col, '.2f'))+"   ",end="")
+            print()
+    else:
+        for i in matrix:
+            print(str(format(i, '.2f'))+"   ",end="")
+
     print()
 
 def getAugmentedMatrix(matrix, y):
@@ -391,17 +396,40 @@ def GramSchmidt(matrix):
 
         v = normalize(newVector)
         appendVector(orthonormalMatrix, v)
-        printMatrix(orthonormalMatrix)
         index+=1
 
     return orthonormalMatrix
 
+def getEigenValues(matrix):
+    Qbuilder = identity(len(matrix),len(matrix[0]))
+    A = cloneMatrix(matrix)
 
+    for i in range(len(matrix[0])):
+        Q = GramSchmidt(A)
+        Qbuilder = multiplyMatrices(Qbuilder,Q)
+        R = multiplyMatrices(inverse(Q),A)
+        A = multiplyMatrices(R,Q)
 
+    eigenvalues = []
+    for loc in range(len(A)):
+        eigenvalues.append(A[loc][loc])
+    return eigenvalues
 
-matrix1 = [[1,-1,0],[2,0,0],[2,2,1]]
+def getEigenVectors(matrix):
+    Qbuilder = identity(len(matrix),len(matrix[0]))
+    A = cloneMatrix(matrix)
 
-val = [[2],[4],[5],[6]]
+    for i in range(len(matrix[0])):
+        Q = GramSchmidt(A)
+        Qbuilder = multiplyMatrices(Qbuilder,Q)
+        R = multiplyMatrices(inverse(Q),A)
+        A = multiplyMatrices(R,Q)
 
-m = GramSchmidt(matrix1)
+    return Qbuilder
+
+matrix1 = [[52,30,49,28],[30,50,8,44],[49,8,46,16],[28,44,16,22]]
+
+vector1 = [[2],[4],[5],[6]]
+
+m = getEigenVectors(matrix1)
 printMatrix(m)
