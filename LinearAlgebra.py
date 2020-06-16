@@ -39,13 +39,19 @@ def getVectorMagnitude(vector):
 def getProjectionLength(vector1,vector2):
     product = dotProduct(vector1,vector2)
     magnitude = getVectorMagnitude(vector2)
-    return product/magnitude
+    if magnitude!=0:
+        return product/magnitude
+    else:
+        return product
 
 def normalize(vector1):
     newVector = []
     magnitude = getVectorMagnitude(vector1)
     for x in vector1:
-        newVector.append(x/magnitude)
+        if magnitude!=0:
+            newVector.append(x/magnitude)
+        else:
+            newVector.append(x)
     return newVector
 
 def subtract(vector1,vector2):
@@ -427,9 +433,39 @@ def getEigenVectors(matrix):
 
     return Qbuilder
 
-matrix1 = [[52,30,49,28],[30,50,8,44],[49,8,46,16],[28,44,16,22]]
+def eig(matrix):
+    Qbuilder = identity(len(matrix),len(matrix[0]))
+    A = cloneMatrix(matrix)
+
+    for i in range(len(matrix[0])):
+        Q = GramSchmidt(A)
+        Qbuilder = multiplyMatrices(Qbuilder,Q)
+        R = multiplyMatrices(inverse(Q),A)
+        A = multiplyMatrices(R,Q)
+
+    return [A, Qbuilder]
+
+def SVD(matrix):
+    AAT = multiplyMatrices(matrix, transpose(matrix))
+    eigAAT = eig(AAT)
+    U = eigAAT[1]
+    ATA = multiplyMatrices(transpose(matrix),matrix)
+    eigATA = eig(ATA)
+    V = eigATA[1]
+    holder = eigATA[0]
+    Sigma = [[0 for i in range(len(matrix[0]))] for j in range(len(matrix))] 
+    for row in range(min(len(Sigma),len(Sigma[0]))):
+        Sigma[row][row] = pow(holder[row][row],.5)
+    printMatrix(multiplyMatrices(U,multiplyMatrices(Sigma,transpose(V))))
+    return [U,Sigma,transpose(V)]
+    
+
+
+matrix1 = [[9,3,9],[3,5,4]]
 
 vector1 = [[2],[4],[5],[6]]
 
-m = getEigenVectors(matrix1)
-printMatrix(m)
+m = SVD(matrix1)
+printMatrix(m[0])
+printMatrix(m[1])
+printMatrix(m[2])
